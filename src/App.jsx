@@ -46,6 +46,8 @@ function App() {
     return total + item.preco * item.quantidade;
   }, 0);
 
+  const totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+
   console.log(carrinho);
   // console.log(totalCarrinho);
 
@@ -84,7 +86,7 @@ function App() {
             </div>
 
             {carrinho.length > 0 && (
-              <div className="space-y-4">
+              <div className="space-y-4 max-w-md mx-auto mt-15 bg-amber-200 p-10 rounded-lg">
                 <div className="space-y-2">
                   <div className="text-lg font-mono font-bold">
                     Carrinho de compras
@@ -93,7 +95,7 @@ function App() {
                     {carrinho.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center bg-gray-100 p-1 rounded-full"
+                        className="flex items-center bg-amber-100 p-2 rounded-full"
                       >
                         <div className="flex-1">
                           {item.nome} x {item.quantidade} —{" "}
@@ -112,7 +114,7 @@ function App() {
                 <div className="space-y-2">
                   <div className="text-lg font-mono font-bold">Total</div>
                   <div>
-                    <div>Total de item: </div>
+                    <div>Total de item: {totalItens}</div>
                     <div className="text-6xl font-bold">
                       {totalCarrinho.toFixed(2)} €
                     </div>
