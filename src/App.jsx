@@ -61,7 +61,7 @@ function App() {
             </div>
             <div>
               {produtosList && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {produtosList.map((item) => (
                     <div key={item.id} className="shadow-md rounded-b-lg">
                       <div>
