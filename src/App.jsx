@@ -5,38 +5,58 @@ import { produtos } from "./lib/produtos";
 import { Trash2 } from "lucide-react";
 
 function App() {
-  const [produtosList, setProdutosList] = useState(produtos);
+  const [produtosList] = useState(produtos);
   const [carrinho, setCarrinho] = useState([]);
 
   const handleAddCarrinho = (id) => {
     // adicionar ao carrinho o produto com o id selecionado
-    const produtoSelecionado = produtosList.find((item) => item.id === id);
+
     const existeNoCarrinho = carrinho.find((item) => item.id === id);
     if (existeNoCarrinho) {
-      return;
+      const novoCarrinho = carrinho.map((item) => {
+        if (item.id === id) {
+          return { ...item, quantidade: item.quantidade + 1 };
+        }
+        return item;
+      });
+      setCarrinho(novoCarrinho);
     } else {
-      setCarrinho([...carrinho, produtoSelecionado]);
+      const produtoSelecionado = produtosList.find((item) => item.id === id);
+      setCarrinho([...carrinho, { ...produtoSelecionado, quantidade: 1 }]);
     }
   };
 
   const handleRemove = (id) => {
-    const novoArray = carrinho.filter((item) => item.id !== id);
-    setCarrinho(novoArray);
+    const produto = carrinho.find((item) => item.id === id);
+    if (produto.quantidade === 1) {
+      setCarrinho(carrinho.filter((item) => item.id !== id));
+    } else {
+      const novoCarrinho = carrinho.map((item) => {
+        if (item.id === id) {
+          return { ...item, quantidade: item.quantidade - 1 };
+        }
+        return item;
+      });
+      setCarrinho(novoCarrinho);
+    }
   };
 
   // soma de todos os precos de carrinho
   const totalCarrinho = carrinho.reduce((total, item) => {
-    return (total += item.preco);
+    return total + item.preco * item.quantidade;
   }, 0);
 
-  console.log(totalCarrinho);
+  console.log(carrinho);
+  // console.log(totalCarrinho);
 
   return (
     <>
       <div className="relative h-screen flex items-center justify-center">
         <div className="max-w-5xl mx-auto">
           <div className="space-y-5">
-            <div className="text-4xl font-bold font-mono">Mini Loja React</div>
+            <div className="text-4xl font-bold font-mono tracking-tighter">
+              Mini Loja React
+            </div>
             <div>
               {produtosList && (
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
@@ -46,8 +66,8 @@ function App() {
                         <img src={item.imagem} alt="" />
                       </div>
                       <div className="p-2 bg-gray-100">
-                        <div>{item.nome}</div>
-                        <div>{item.preco}</div>
+                        <div className="font-bold text-lg">{item.nome}</div>
+                        <div className="text-sm">{item.preco}</div>
                         <div className="mt-4">
                           <button
                             onClick={() => handleAddCarrinho(item.id)}
@@ -76,7 +96,8 @@ function App() {
                         className="flex items-center bg-gray-100 p-1 rounded-full"
                       >
                         <div className="flex-1">
-                          {item.id} - {item.nome} - {item.preco}
+                          {item.nome} x {item.quantidade} —{" "}
+                          {(item.preco * item.quantidade).toFixed(2)} €
                         </div>
                         <button
                           onClick={() => handleRemove(item.id)}
@@ -91,8 +112,10 @@ function App() {
                 <div className="space-y-2">
                   <div className="text-lg font-mono font-bold">Total</div>
                   <div>
-                    <div>Total de item: {carrinho.length}</div>
-                    <div>Total: {totalCarrinho.toFixed(2)}</div>
+                    <div>Total de item: </div>
+                    <div className="text-6xl font-bold">
+                      {totalCarrinho.toFixed(2)} €
+                    </div>
                   </div>
                 </div>
               </div>
