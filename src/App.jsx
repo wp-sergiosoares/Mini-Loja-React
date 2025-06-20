@@ -1,12 +1,19 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { produtos } from "./lib/produtos";
 
 import { Trash2 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+
 function App() {
   const [produtosList] = useState(produtos);
   const [carrinho, setCarrinho] = useState([]);
+
+  const [searchInput, setSearchInput] = useState("");
+  const [filtered, setFiltered] = useState([]);
+
+  console.log(searchInput);
 
   const handleAddCarrinho = (id) => {
     // adicionar ao carrinho o produto com o id selecionado
@@ -48,21 +55,64 @@ function App() {
 
   const totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
 
-  console.log(carrinho);
+  const handleSearch = (e) => {
+    const valor = e.target.value;
+    setSearchInput(valor);
+    const encontrouProduto = produtosList.filter((produto) =>
+      produto.nome.toLowerCase().includes(valor.toLowerCase())
+    );
+    setFiltered(encontrouProduto);
+  };
+
+  useEffect(() => {
+    if (searchInput.trim() === "") {
+      setFiltered(produtosList);
+    } else {
+      const encontrouProduto = produtosList.filter((produto) =>
+        produto.nome.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      setFiltered(encontrouProduto);
+    }
+  }, [searchInput, produtosList]);
+
+  //console.log(carrinho);
   // console.log(totalCarrinho);
 
   return (
     <>
-      <div className="relative h-screen flex items-center justify-center">
-        <div className="max-w-5xl mx-auto">
+      <div className="my-10 p-4">
+        <div className="container max-w-2xl mx-auto">
           <div className="space-y-5">
             <div className="text-4xl font-bold font-mono tracking-tighter">
               Mini Loja React
             </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                // já está sendo filtrado com o onChange
+              }}
+            >
+              <div className="flex gap-2 items-center justify-between">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    className="border-1 border-gray-800 p-3 w-full rounded-full text-lg"
+                    placeholder="pesquisa..."
+                    value={searchInput}
+                    onChange={(e) => handleSearch(e)}
+                  />
+                </div>
+                <div>
+                  <button className="bg-blue-500 p-3 rounded-full text-white cursor-pointer hover:bg-blue-400">
+                    Pesquisa
+                  </button>
+                </div>
+              </div>
+            </form>
             <div>
-              {produtosList && (
+              {filtered && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {produtosList.map((item) => (
+                  {filtered.map((item) => (
                     <div key={item.id} className="shadow-md rounded-b-lg">
                       <div>
                         <img src={item.imagem} alt="" />
@@ -71,12 +121,12 @@ function App() {
                         <div className="font-bold text-lg">{item.nome}</div>
                         <div className="text-sm">{item.preco}</div>
                         <div className="mt-4">
-                          <button
+                          <Button
                             onClick={() => handleAddCarrinho(item.id)}
                             className="p-2 text-white cursor-pointer rounded-lg bg-blue-500 hover:bg-blue-400"
                           >
                             adiciona
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
